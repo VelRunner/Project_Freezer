@@ -18,7 +18,7 @@ def verif_identifiant(id,passwd):
             passwd = input("rentrer votre mot de passe")
             cursor.execute('INSERT INTO user_table (user_id,user_passwd) VALUES \'%' + id,passwd + '%\'')
             os.system('sudo adduser \'%' + id + '%\'')
-            os.system('sudo passwd \'%' + passwd + '%\'')
+            os.system('sudo passwd \'%' + id, passwd + '%\'')
             print("vous être maintenant inscrit")
         else:
             print("au revoir")
