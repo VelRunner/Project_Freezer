@@ -10,24 +10,45 @@ import socket
 
 ###FONCTION###
 
+
+def init(cur):
+    cur.execute("CREATE table")
+    cur.execute("CREATE table")
+    cur.execute("CREATE table")
+
+
+
 #FONCTION verification_utilisateur
 
-def verif_identifiant(id,passwd):
-    if id != cursor.execute('SELECT * FROM user_table WHERE user_id = \'%' + id + '%\''):
-        true = input("Votre nom d'utilisateur n'existe pas dans la base de donnée, êtes-vous un nouvel utilisateur (exit pour sortir du programme)?")
-        if true != 'exit':
-            print("Inscription")
-            id = input("rentrer votre identifiant")
-            passwd = input("rentrer votre mot de passe")
-            cursor.execute('INSERT INTO user_table (user_id,user_passwd) VALUES \'%' + id,passwd + '%\'')
-            os.system('sudo adduser \'%' + id + '%\'')
-            os.system('sudo passwd \'%' + id, passwd + '%\'')
-            print("vous être maintenant inscrit")
-        else:
-            print("au revoir")
-            exit()
+def inscription(cursor,id,passwd):
+    if not cursor.execute('SELECT * FROM user_table WHERE user_id =?',(id,)):
+        cursor.execute('INSERT INTO user_table (user_id,user_passwd) VALUES (?,?)',(id,passwd))
+        return True
     else:
-        print("Bienvenue ",id)
+        return False
+
+def connexion_user(cur,id,passwd):
+    if cur.execute('SELECT * FROM user_table WHERE user_id =? and user_name=?',(id,passwd)):
+        return True
+    return False
+
+
+def aff_musique(cur):
+    pass
+
+def aff_musique_user(cur,user):
+    pass
+
+def add_musique(cur,nom_musique,username):
+    # si la musique est présente dans la bdd
+    # on renvoie le chemin
+
+    # sinon: download_youtube.py
+    # on ajoute la ligne dans la table MUSICS et users
+    pass
+
+def del_musique(cur,nom_musique,username):
+    pass
 
 
 #FONCTION connexion client serveur - socket
@@ -55,18 +76,39 @@ def client_program():
 ###PROGRAM###
 
 
-print("Bienvenue sur votre logiciel de musique open-source préféré !")
-print("FREEZER !")
-print("Veuillez vous identifier")
-id_user = input("Identifiant utilisateur : ")
-passwd_user = input("Mot de passe : ")
-
 connexion = sqlite3.connect("bdd_freezer.db")
 cursor = connexion.cursor()
 
-verif_identifiant(id_user,passwd_user)
 
-os.system('su \'%' + id_user + '%\'')
+
+print("Bienvenue sur votre logiciel de musique open-source préféré !")
+print("FREEZER !")
+
+choix=input("Connexion ou Inscription? 1/2: ")
+
+
+if choix== 1:
+    print("Veuillez vous identifier")
+    id_user = input("Identifiant utilisateur : ")
+    passwd_user = input("Mot de passe : ")
+    if  not connexion(cursor, id_user,passwd_user):
+        print("Identifiants incorrect")
+        exit()
+elif choix == 2:
+    print("Inscription")
+    id_user = input("Identifiant utilisateur : ")
+    passwd_user = input("Mot de passe : ")
+    if not inscription(cursor,id_user,passwd_user):
+        print("nom d'utilisateur deja prit")
+        exit()
+
+
+#le client est connecté
+
+
+
+
+#os.system('su \'%' + id_user + '%\'')
 
 if __name__ == '__main__':
      client_program()
